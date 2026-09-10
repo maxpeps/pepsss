@@ -1,0 +1,1188 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Досье риск-контроля</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #EDEFE9;
+    --surface: #FFFFFF;
+    --surface-2: #E3E7DE;
+    --border: #C7CCBE;
+    --ink: #1A2119;
+    --muted: #5C6558;
+    --accent: #35506B;
+    --accent-ink: #223648;
+    --accent-soft: #DDE5EC;
+    --good: #3F7A4F;
+    --good-soft: #DEEBE0;
+    --warn: #9C6C1F;
+    --warn-soft: #F0E3C9;
+    --critical: #A23B34;
+    --critical-soft: #F2DEDB;
+    --focus: #35506B;
+    --shadow: 0 1px 2px rgba(26,33,25,0.06), 0 4px 14px rgba(26,33,25,0.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg: #14180F;
+      --surface: #1C2117;
+      --surface-2: #262C20;
+      --border: #3B4234;
+      --ink: #E8EBE1;
+      --muted: #9CA694;
+      --accent: #8FB0CE;
+      --accent-ink: #B9CFE2;
+      --accent-soft: #253340;
+      --good: #74C08A;
+      --good-soft: #223226;
+      --warn: #D9A75C;
+      --warn-soft: #362C1C;
+      --critical: #E28B82;
+      --critical-soft: #3A2320;
+      --focus: #8FB0CE;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 4px 14px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg: #14180F;
+    --surface: #1C2117;
+    --surface-2: #262C20;
+    --border: #3B4234;
+    --ink: #E8EBE1;
+    --muted: #9CA694;
+    --accent: #8FB0CE;
+    --accent-ink: #B9CFE2;
+    --accent-soft: #253340;
+    --good: #74C08A;
+    --good-soft: #223226;
+    --warn: #D9A75C;
+    --warn-soft: #362C1C;
+    --critical: #E28B82;
+    --critical-soft: #3A2320;
+    --focus: #8FB0CE;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 4px 14px rgba(0,0,0,0.35);
+  }
+
+  *{ box-sizing: border-box; }
+  html{ color-scheme: light dark; }
+  body{
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-size: 15.5px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  h1,h2,h3,h4{
+    font-family: "Zilla Slab", Georgia, serif;
+    font-weight: 600;
+    color: var(--ink);
+    text-wrap: balance;
+    margin: 0;
+  }
+  a, .link{ color: var(--accent); }
+  code, .mono, .tabnum{ font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  .tabnum{ font-variant-numeric: tabular-nums; }
+
+  .page{
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 28px 20px 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  /* Masthead */
+  .masthead{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .eyebrow{
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .masthead h1{ font-size: clamp(26px, 4vw, 34px); }
+  .masthead p{ margin: 4px 0 0; color: var(--muted); max-width: 62ch; }
+
+  /* App tabs */
+  .app-tabs{ display: flex; gap: 8px; }
+  .app-tab{
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 13.5px;
+    font-weight: 500;
+    padding: 9px 16px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .app-tab.is-active{ background: var(--accent); color: var(--surface); border-color: var(--accent); }
+  .tab-panel{ display: flex; flex-direction: column; gap: 28px; }
+
+  /* Status tab */
+  .status-grid{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  @media (max-width: 640px){ .status-grid{ grid-template-columns: 1fr; } }
+  .status-card{
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px 16px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 10px;
+  }
+  .toggle3{ display: flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; width: fit-content; }
+  .toggle3 button{
+    border: none; background: var(--surface); color: var(--muted);
+    font-family: "IBM Plex Sans", sans-serif; font-size: 12.5px; padding: 7px 11px; cursor: pointer;
+  }
+  .toggle3 button + button{ border-left: 1px solid var(--border); }
+  .toggle3 button.is-active[data-val="yes"]{ background: var(--good); color: var(--surface); }
+  .toggle3 button.is-active[data-val="no"]{ background: var(--critical); color: var(--surface); }
+  .toggle3 button.is-active[data-val="unknown"]{ background: var(--muted); color: var(--surface); }
+
+  .privacy-note{
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 12px 16px;
+    box-shadow: var(--shadow);
+  }
+  .privacy-note svg{ flex: none; margin-top: 2px; color: var(--accent); }
+  .privacy-note p{ margin: 0; color: var(--muted); }
+  .privacy-note strong{ color: var(--ink); }
+
+  /* Overview */
+  .overview{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .stat-tile{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+  .stat-tile__label{
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-family: "IBM Plex Mono", monospace;
+  }
+  .stat-tile__value{
+    font-family: "Zilla Slab", serif;
+    font-size: 26px;
+    font-weight: 600;
+  }
+  .stat-tile__value--text{
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .progress-track{
+    display: flex;
+    gap: 4px;
+    height: 8px;
+  }
+  .progress-seg{
+    flex: 1;
+    border-radius: 2px;
+    background: var(--border);
+  }
+  .progress-seg[data-status="draft"]{ background: var(--warn); }
+  .progress-seg[data-status="ready"]{ background: var(--good); }
+
+  @media (max-width: 640px){
+    .overview{ grid-template-columns: 1fr; }
+  }
+
+  /* Section headers */
+  .section-head{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 14px;
+  }
+  .section-head h2{ font-size: 20px; }
+  .section-head p.section-sub{ margin: 4px 0 0; color: var(--muted); font-size: 13.5px; max-width: 64ch; }
+
+  /* Verification checklist */
+  .verify-list{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .verify-item{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .verify-item__text strong{ display: block; font-size: 14.5px; }
+  .verify-item__text span{ display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .toggle2{
+    display: flex;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    flex: none;
+  }
+  .toggle2 button{
+    border: none;
+    background: var(--surface);
+    color: var(--muted);
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 12.5px;
+    padding: 7px 12px;
+    cursor: pointer;
+  }
+  .toggle2 button + button{ border-left: 1px solid var(--border); }
+  .toggle2 button.is-active{ background: var(--accent); color: var(--surface); font-weight: 500; }
+
+  /* Narrative */
+  .narrative{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .narrative-steps{ display: flex; flex-direction: column; }
+  .narrative-step{ display: grid; grid-template-columns: 32px 1fr; gap: 14px; padding: 14px 0; }
+  .narrative-step + .narrative-step{ border-top: 1px dashed var(--border); }
+  .narrative-step__num{
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--accent-soft); color: var(--accent-ink);
+    display: flex; align-items: center; justify-content: center;
+    font-family: "IBM Plex Mono", monospace; font-weight: 500; font-size: 13px;
+  }
+  .narrative-step label{ display: block; font-weight: 500; margin-bottom: 6px; font-size: 14px; }
+  textarea, .select-fake, input[type="text"]{
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+  textarea{ min-height: 56px; resize: vertical; }
+  textarea:focus-visible, input:focus-visible, button:focus-visible, .dropzone:focus-visible, select:focus-visible{
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+  .narrative-hint{
+    margin: 14px 0 0; font-size: 13px; color: var(--muted);
+    padding-top: 12px; border-top: 1px dashed var(--border);
+  }
+
+  /* Document cards */
+  .doc-stack{ display: flex; flex-direction: column; gap: 16px; }
+  .doc-card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .doc-card__head{ display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .doc-card__title-group{ display: flex; align-items: center; gap: 10px; }
+  .doc-card__icon{
+    flex: none; width: 30px; height: 30px; border-radius: 6px;
+    background: var(--surface-2); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .doc-card__title-group h3{ font-size: 16.5px; }
+  .doc-card__desc{ margin: 0; color: var(--muted); font-size: 13.5px; }
+  .doc-card__note{
+    margin: 0; font-size: 12.5px; color: var(--muted);
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 5px; padding: 8px 10px;
+  }
+
+  .status-badge{
+    font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.04em;
+    padding: 3px 9px; border-radius: 3px; white-space: nowrap;
+    background: var(--critical-soft); color: var(--critical); border: 1px solid currentColor;
+  }
+  .status-badge[data-status="draft"]{ background: var(--warn-soft); color: var(--warn); }
+  .status-badge[data-status="ready"]{ background: var(--good-soft); color: var(--good); }
+
+  .field-label{
+    display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+    font-size: 13px; font-weight: 500; color: var(--ink);
+  }
+  .field-label .counter{ font-family: "IBM Plex Mono", monospace; font-size: 11.5px; color: var(--muted); font-weight: 400; }
+
+  select.select-fake{
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+    background-position: calc(100% - 18px) center, calc(100% - 13px) center;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+    padding-right: 34px;
+    cursor: pointer;
+  }
+
+  .field-row{ display: flex; flex-direction: column; gap: 6px; }
+  .insert-btn{
+    align-self: flex-start;
+    border: 1px dashed var(--border);
+    background: none;
+    color: var(--accent);
+    font-size: 12px;
+    padding: 4px 9px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: "IBM Plex Sans", sans-serif;
+  }
+  .insert-btn:hover{ background: var(--accent-soft); }
+
+  .dropzone{
+    border: 1.5px dashed var(--border);
+    border-radius: 6px;
+    padding: 16px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13.5px;
+    cursor: pointer;
+    background: var(--surface-2);
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .dropzone:hover, .dropzone.is-dragover{ border-color: var(--accent); background: var(--accent-soft); }
+  .dropzone p{ margin: 0; }
+  .dropzone .fmt{ display: block; font-size: 11.5px; margin-top: 4px; opacity: 0.85; }
+
+  .file-list{ list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .file-list:empty{ display: none; }
+  .file-list li{
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 5px;
+    padding: 7px 10px; font-size: 12.5px;
+  }
+  .file-list .file-name{
+    font-family: "IBM Plex Mono", monospace; overflow: hidden; text-overflow: ellipsis;
+    white-space: nowrap; color: var(--ink); flex: 1; min-width: 0;
+  }
+  .file-list .file-size{ color: var(--muted); flex: none; }
+  .file-actions{ display: flex; align-items: center; gap: 2px; flex: none; }
+  .icon-btn{
+    border: none; background: none; cursor: pointer; padding: 3px 6px;
+    border-radius: 4px; color: var(--muted); font-size: 12px;
+    font-family: "IBM Plex Sans", sans-serif;
+  }
+  .icon-btn:hover{ background: var(--border); color: var(--ink); }
+  .icon-btn.danger{ color: var(--critical); }
+  .file-error{ font-size: 12.5px; color: var(--critical); margin: 0; }
+
+  .doc-card__footer{
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding-top: 10px; border-top: 1px dashed var(--border); flex-wrap: wrap;
+  }
+  .status-toggle{ display: flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; width: fit-content; }
+  .status-toggle button{
+    border: none; background: var(--surface); color: var(--muted);
+    font-family: "IBM Plex Sans", sans-serif; font-size: 12px; padding: 6px 10px; cursor: pointer;
+  }
+  .status-toggle button + button{ border-left: 1px solid var(--border); }
+  .status-toggle button.is-active{ background: var(--accent); color: var(--surface); font-weight: 500; }
+
+  /* Reference */
+  details.reference{
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  details.reference summary{
+    cursor: pointer; padding: 16px 20px; font-family: "Zilla Slab", serif;
+    font-weight: 600; font-size: 15.5px; list-style: none;
+  }
+  details.reference summary::-webkit-details-marker{ display: none; }
+  details.reference summary::before{
+    content: "▸"; display: inline-block; margin-right: 8px; color: var(--accent);
+    transition: transform 0.15s ease;
+  }
+  details.reference[open] summary::before{ transform: rotate(90deg); }
+  .reference__body{ padding: 0 20px 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  @media (max-width: 640px){ .reference__body{ grid-template-columns: 1fr; } }
+  .reference__col h4{
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted);
+    font-family: "IBM Plex Mono", monospace; margin-bottom: 8px; font-weight: 500;
+  }
+  .reference__col p, .reference__col li{ font-size: 13.5px; color: var(--ink); }
+  .reference__col ul{ margin: 0; padding-left: 18px; }
+  .reference__col li + li{ margin-top: 5px; }
+
+  footer.foot-note{ text-align: center; color: var(--muted); font-size: 12.5px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="masthead">
+    <span class="eyebrow">Личный органайзер · MEXC</span>
+    <h1>Досье риск-контроля</h1>
+    <p>Документы под форму Account Risk Review и заметки о статусе вашего аккаунта — в одном месте.</p>
+  </div>
+
+  <div class="app-tabs" role="tablist" aria-label="Разделы">
+    <button type="button" class="app-tab is-active" data-tab="documents" role="tab" aria-selected="true">Документы</button>
+    <button type="button" class="app-tab" data-tab="status" role="tab" aria-selected="false">Статус аккаунта</button>
+  </div>
+
+  <div id="tabDocuments" class="tab-panel">
+
+  <div class="privacy-note">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+    <p><strong>Ничего не отправляется на MEXC отсюда.</strong> Файлы хранятся только в этом браузере (IndexedDB). Кнопки «Скачать» рядом с файлами просто сохраняют файл вам на устройство, чтобы потом вручную перетащить его в форму MEXC.</p>
+  </div>
+
+  <div class="overview">
+    <div class="stat-tile">
+      <span class="stat-tile__label">Готовность пакета</span>
+      <span class="stat-tile__value tabnum" id="statProgress">0 / 5</span>
+      <div class="progress-track" id="progressTrack" aria-hidden="true"></div>
+    </div>
+    <div class="stat-tile">
+      <span class="stat-tile__label">Хронология</span>
+      <span class="stat-tile__value stat-tile__value--text" id="statNarrative">не заполнена</span>
+    </div>
+    <div class="stat-tile">
+      <span class="stat-tile__label">Ближайший шаг</span>
+      <span class="stat-tile__value stat-tile__value--text" id="statNext">Пройдите верификацию</span>
+    </div>
+  </div>
+
+  <section>
+    <div class="section-head">
+      <span class="eyebrow">Risk Review Documents</span>
+      <h2>Шаги верификации</h2>
+      <p class="section-sub">Эти два шага проходятся живьём на самой MEXC — здесь просто отмечайте прогресс.</p>
+    </div>
+    <div class="verify-list" id="verifyList"></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="eyebrow">Черновик</span>
+      <h2>Хронология происхождения средств</h2>
+      <p class="section-sub">Составьте один раз — потом вставляйте в поля объяснений ниже кнопкой «Вставить», чтобы формулировки не расходились между полями.</p>
+    </div>
+    <div class="narrative">
+      <div class="narrative-steps">
+        <div class="narrative-step">
+          <span class="narrative-step__num">1</span>
+          <div>
+            <label for="step1">Откуда деньги (доход)</label>
+            <textarea id="step1" placeholder="Например: зарплата ≈150 000 ₽/мес на карту Т-Банка от ООО «Ромашка», трудовой договор от 03.2023"></textarea>
+          </div>
+        </div>
+        <div class="narrative-step">
+          <span class="narrative-step__num">2</span>
+          <div>
+            <label for="step2">Кто отправил и с какого кошелька/платформы</label>
+            <textarea id="step2" placeholder="Например: перевод с личного кошелька на Bybit, обменяно на USDT"></textarea>
+          </div>
+        </div>
+        <div class="narrative-step">
+          <span class="narrative-step__num">3</span>
+          <div>
+            <label for="step3">Когда и зачем переведено на MEXC</label>
+            <textarea id="step3" placeholder="Например: 12.08.2026 переведено 2 000 USDT на депозитный адрес MEXC для фьючерсной торговли, хэш 0x…"></textarea>
+          </div>
+        </div>
+      </div>
+      <p class="narrative-hint">Используйте одну и ту же формулировку во всех полях и в переписке с поддержкой — расхождения в объяснениях чаще всего продлевают проверку.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="eyebrow">Risk Review Documents</span>
+      <h2>Документы</h2>
+      <p class="section-sub">Названия полей и варианты в выпадающих списках — те же, что в форме MEXC, чтобы не путаться при переносе.</p>
+    </div>
+    <div class="doc-stack" id="docStack"></div>
+  </section>
+
+  <details class="reference">
+    <summary>Справка: сроки и как не продлить проверку</summary>
+    <div class="reference__body">
+      <div class="reference__col">
+        <h4>Сроки</h4>
+        <p>Проверка документов — обычно около 3 рабочих дней. Дальше может идти этап риск-анализа без точного таймера — от нескольких дней до нескольких месяцев в сложных случаях.</p>
+        <p>Если нужен только вывод и закрытие позиций, у MEXC есть отдельная форма Withdrawal Appeal — видео с лицом и документом, рассматривается быстрее.</p>
+      </div>
+      <div class="reference__col">
+        <h4>Чтобы не продлить проверку</h4>
+        <ul>
+          <li>Отправляйте пакет одним разом, не по частям</li>
+          <li>Не меняйте формулировки между заявками</li>
+          <li>Не создавайте новые связанные аккаунты</li>
+          <li>Файлы — читаемые, без пароля, все поля видны</li>
+        </ul>
+      </div>
+      <div class="reference__col">
+        <h4>Форматы и размер</h4>
+        <p>Для полей Proof of Address, Occupation Details и Proof of Source of Deposits MEXC принимает JPG, JPEG, PNG, PDF — до 10 МБ на файл.</p>
+        <p>Документы должны быть без пароля и не старше указанного в поле срока (адрес — 6 мес., выписка — 3 мес.).</p>
+      </div>
+    </div>
+  </details>
+
+  </div><!-- /tabDocuments -->
+
+  <div id="tabStatus" class="tab-panel" hidden>
+
+    <div class="privacy-note">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>
+      <p><strong>Это заметки, а не живые данные.</strong> Страница не может сама достучаться до MEXC — здесь просто удобное место, куда вы вручную заносите то, что увидели на сайте или в локальном скрипте-дашборде.</p>
+    </div>
+
+    <section>
+      <div class="section-head">
+        <span class="eyebrow">Последняя проверка</span>
+        <h2>Статус аккаунта</h2>
+        <p class="section-sub">Проверьте актуальные значения на mexc.com (Личный кабинет) или через локальный скрипт-дашборд, затем занесите их сюда — дата обновится автоматически.</p>
+      </div>
+
+      <div class="status-grid">
+        <div class="status-card">
+          <span class="field-label">KYC-уровень</span>
+          <select class="select-fake" id="statusKyc">
+            <option value="unknown">Неизвестно</option>
+            <option value="none">Не пройдена</option>
+            <option value="primary">Базовая (Primary KYC)</option>
+            <option value="advanced">Расширенная (Advanced KYC)</option>
+            <option value="institutional">Институциональная</option>
+          </select>
+        </div>
+        <div class="status-card">
+          <span class="field-label">Спот-торговля</span>
+          <div class="toggle3" data-role="statusToggle" data-key="canTrade">
+            <button type="button" data-val="unknown">?</button>
+            <button type="button" data-val="yes">Разрешена</button>
+            <button type="button" data-val="no">Заблокирована</button>
+          </div>
+        </div>
+        <div class="status-card">
+          <span class="field-label">Фьючерсы</span>
+          <div class="toggle3" data-role="statusToggle" data-key="futures">
+            <button type="button" data-val="unknown">?</button>
+            <button type="button" data-val="yes">Разрешены</button>
+            <button type="button" data-val="no">Заблокированы</button>
+          </div>
+        </div>
+        <div class="status-card">
+          <span class="field-label">Вывод средств</span>
+          <div class="toggle3" data-role="statusToggle" data-key="canWithdraw">
+            <button type="button" data-val="unknown">?</button>
+            <button type="button" data-val="yes">Разрешён</button>
+            <button type="button" data-val="no">Заблокирован</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="narrative" style="margin-top:14px">
+        <div class="field-row">
+          <span class="field-label">Заметка (например, ФИО по KYC, если сверяли вручную)</span>
+          <textarea id="statusNote" placeholder="Например: ФИО в профиле совпадает с моим паспортом, проверено 10.09.2026"></textarea>
+        </div>
+        <p class="narrative-hint" id="statusUpdatedLine">Ещё не обновлялось.</p>
+      </div>
+    </section>
+
+    <details class="reference" open>
+      <summary>Как проверить актуальные значения</summary>
+      <div class="reference__body">
+        <div class="reference__col">
+          <h4>Через сайт</h4>
+          <p>mexc.com → иконка аккаунта → раздел с личными данными и верификацией — там же ФИО и уровень KYC.</p>
+        </div>
+        <div class="reference__col">
+          <h4>Через локальный скрипт</h4>
+          <p>Ранее отправленный <code>mexc_dashboard.py</code> — запустите его и откройте localhost, чтобы увидеть KYC-уровень и флаги canTrade/canWithdraw/canDeposit по официальному API.</p>
+        </div>
+        <div class="reference__col">
+          <h4>Чего тут не будет</h4>
+          <p>Email и ФИО по API не отдаются — их можно только сверить вручную и записать в заметку слева.</p>
+        </div>
+      </div>
+    </details>
+
+  </div><!-- /tabStatus -->
+
+  <footer class="foot-note">Личный инструмент. Не связан с MEXC и не заменяет официальную процедуру биржи.</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var STORAGE_KEY = "riskDossier_v2";
+  var DB_NAME = "riskDossierFiles";
+  var STORE_NAME = "blobs";
+  var ALLOWED_EXT = ["jpg", "jpeg", "png", "pdf"];
+  var MAX_SIZE = 10 * 1024 * 1024;
+
+  var VERIFY_STEPS = [
+    { key: "facial", title: "Complete Facial Recognition", note: "Подтверждение личности через камеру — проходится на самой MEXC." },
+    { key: "kyc", title: "Complete Advanced KYC Verification", note: "Автоматическая проверка, результат приходит через 5–10 минут." }
+  ];
+
+  var CATEGORIES = [
+    {
+      key: "address",
+      title: "Proof of Address",
+      desc: "Документ не старше 6 месяцев, на ваше имя, с чётко видимым адресом. Если документ не на ваше имя (живёте с родителями/супругом) — приложите ещё и подтверждение родства. Ваша банковская выписка (PDF) обычно идёт именно сюда — с типом «Bank, Credit Card & Financial Statements».",
+      icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11 12 4l8 7"/><path d="M6 10v9h12v-9"/><rect x="10" y="13" width="4" height="6"/></svg>',
+      hasDropdown: true,
+      dropdownLabel: "Document type",
+      dropdownOptions: [
+        "Utility Bills (Water, Electricity, Gas, Internet)",
+        "Bank, Credit Card & Financial Statements",
+        "Government Documents (Tax, Residence)",
+        "Mobile Bills, Insurance & Other Valid Documents",
+        "Other Document"
+      ],
+      hasTextarea: false
+    },
+    {
+      key: "occupation",
+      title: "Occupation Details (Proof of Income)",
+      desc: "Опишите текущее место работы / источник дохода. Если дохода или занятости нет — приложите банковскую выписку за последние 3 месяца вместо описания.",
+      icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="3" width="14" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="13" y2="16"/></svg>',
+      hasDropdown: false,
+      hasTextarea: true,
+      textareaMax: 300,
+      textareaPlaceholder: "Например: работаю менеджером в ООО «Ромашка» с 2023 года, доход ≈150 000 ₽/мес",
+      chronologyInsert: ["step1"]
+    },
+    {
+      key: "deposits",
+      title: "Proof of Source of Last 1–2 Deposits",
+      desc: "Кто отправил средства и с какого кошелька/платформы, а также зачем они внесены на MEXC (спот, фьючерсы, MEXC Earn). Приложите скриншот перевода с активом, суммой, временем и TxID — ваши скриншоты депозита с биржи обычно идут именно сюда.",
+      icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="9" r="6"/><circle cx="15" cy="15" r="6" stroke-opacity="0.55"/></svg>',
+      hasDropdown: true,
+      dropdownLabel: "Source of funds",
+      dropdownOptions: [
+        "Funds From Personal Wallet or Trading Platform",
+        "Funds From Third-Party Transfers",
+        "Funds From Crypto Investments",
+        "Funds From Investment Returns on Another Platform",
+        "Other Special Circumstances"
+      ],
+      hasTextarea: true,
+      textareaMax: 300,
+      textareaPlaceholder: "Например: перевод с личного кошелька Bybit, USDT, для фьючерсной торговли на MEXC",
+      chronologyInsert: ["step2", "step3"]
+    }
+  ];
+
+  var STATUS_LABEL = { none: "Не готово", draft: "Черновик", ready: "Готово" };
+
+  // Ваши обычные ответы — подставлены заранее, чтобы не вводить их каждый раз.
+  var DEFAULTS = {
+    address: { dropdown: "Bank, Credit Card & Financial Statements" },
+    occupation: { text: "Designer" },
+    deposits: { dropdown: "Funds From Personal Wallet or Trading Platform" }
+  };
+
+  function defaultState(){
+    var categories = {};
+    CATEGORIES.forEach(function(c){
+      categories[c.key] = Object.assign({ status: "none", dropdown: "", text: "", files: [] }, DEFAULTS[c.key] || {});
+    });
+    var verify = {};
+    VERIFY_STEPS.forEach(function(v){ verify[v.key] = false; });
+    return {
+      narrative: { step1: "", step2: "", step3: "" },
+      categories: categories,
+      verify: verify,
+      status: { kyc: "unknown", canTrade: "unknown", canWithdraw: "unknown", futures: "unknown", note: "", updatedAt: "" }
+    };
+  }
+
+  var state = loadState();
+
+  function loadState(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(raw){
+        var parsed = JSON.parse(raw);
+        var base = defaultState();
+        base.narrative = Object.assign(base.narrative, parsed.narrative || {});
+        base.verify = Object.assign(base.verify, parsed.verify || {});
+        base.status = Object.assign(base.status, parsed.status || {});
+        CATEGORIES.forEach(function(c){
+          if(parsed.categories && parsed.categories[c.key]){
+            base.categories[c.key] = Object.assign(base.categories[c.key], parsed.categories[c.key]);
+          }
+        });
+        return base;
+      }
+    }catch(e){}
+    return defaultState();
+  }
+  function saveState(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){} }
+
+  function genId(){
+    if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return "f" + Date.now() + Math.random().toString(16).slice(2);
+  }
+
+  // ---- IndexedDB blob store ----
+  var dbPromise = null;
+  function openDB(){
+    if(dbPromise) return dbPromise;
+    dbPromise = new Promise(function(resolve, reject){
+      var req = indexedDB.open(DB_NAME, 1);
+      req.onupgradeneeded = function(){ req.result.createObjectStore(STORE_NAME); };
+      req.onsuccess = function(){ resolve(req.result); };
+      req.onerror = function(){ reject(req.error); };
+    });
+    return dbPromise;
+  }
+  function putBlob(id, blob){
+    return openDB().then(function(db){
+      return new Promise(function(resolve, reject){
+        var tx = db.transaction(STORE_NAME, "readwrite");
+        tx.objectStore(STORE_NAME).put(blob, id);
+        tx.oncomplete = function(){ resolve(); };
+        tx.onerror = function(){ reject(tx.error); };
+      });
+    });
+  }
+  function getBlob(id){
+    return openDB().then(function(db){
+      return new Promise(function(resolve, reject){
+        var tx = db.transaction(STORE_NAME, "readonly");
+        var r = tx.objectStore(STORE_NAME).get(id);
+        r.onsuccess = function(){ resolve(r.result); };
+        r.onerror = function(){ reject(r.error); };
+      });
+    });
+  }
+  function deleteBlobFromDB(id){
+    return openDB().then(function(db){
+      return new Promise(function(resolve, reject){
+        var tx = db.transaction(STORE_NAME, "readwrite");
+        tx.objectStore(STORE_NAME).delete(id);
+        tx.oncomplete = function(){ resolve(); };
+        tx.onerror = function(){ reject(tx.error); };
+      });
+    });
+  }
+
+  function formatSize(bytes){
+    if(bytes < 1024) return bytes + " Б";
+    if(bytes < 1024*1024) return Math.round(bytes/1024) + " КБ";
+    return (bytes/1024/1024).toFixed(1) + " МБ";
+  }
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function validateFile(file){
+    var ext = (file.name.split(".").pop() || "").toLowerCase();
+    if(ALLOWED_EXT.indexOf(ext) === -1) return "Формат ." + ext + " не поддерживается (JPG, PNG, PDF)";
+    if(file.size > MAX_SIZE) return "Файл больше 10 МБ";
+    return null;
+  }
+
+  // ---- downloads capability ----
+  var downloadsApi = null, downloadsChecked = false;
+  function ensureDownloads(){
+    if(downloadsChecked) return Promise.resolve(downloadsApi);
+    downloadsChecked = true;
+    if(!(window.claude && window.claude.use)) return Promise.resolve(null);
+    return window.claude.use("downloads").then(function(api){ downloadsApi = api; return api; }).catch(function(){ return null; });
+  }
+
+  // ---- Verify steps ----
+  var verifyList = document.getElementById("verifyList");
+  VERIFY_STEPS.forEach(function(v){
+    var row = document.createElement("div");
+    row.className = "verify-item";
+    row.innerHTML =
+      '<div class="verify-item__text"><strong>' + v.title + '</strong><span>' + v.note + '</span></div>' +
+      '<div class="toggle2" data-role="toggle" role="group" aria-label="' + v.title + '">' +
+        '<button type="button" data-val="0">Не пройдено</button>' +
+        '<button type="button" data-val="1">Пройдено</button>' +
+      '</div>';
+    verifyList.appendChild(row);
+    var toggle = row.querySelector('[data-role="toggle"]');
+    toggle.addEventListener("click", function(e){
+      var btn = e.target.closest("button");
+      if(!btn) return;
+      state.verify[v.key] = btn.getAttribute("data-val") === "1";
+      saveState();
+      renderVerify(v.key);
+      renderOverview();
+    });
+  });
+  function renderVerify(key){
+    var idx = VERIFY_STEPS.findIndex(function(v){ return v.key === key; });
+    var row = verifyList.children[idx];
+    row.querySelectorAll("button").forEach(function(btn){
+      var val = btn.getAttribute("data-val") === "1";
+      btn.classList.toggle("is-active", val === !!state.verify[key]);
+    });
+  }
+
+  // ---- Doc cards ----
+  var docStack = document.getElementById("docStack");
+  CATEGORIES.forEach(function(cat){
+    var card = document.createElement("section");
+    card.className = "doc-card";
+    card.setAttribute("data-key", cat.key);
+
+    var html = '<div class="doc-card__head">' +
+        '<div class="doc-card__title-group">' +
+          '<span class="doc-card__icon">' + cat.icon + '</span>' +
+          '<h3>' + cat.title + '</h3>' +
+        '</div>' +
+        '<span class="status-badge" data-status="none" data-role="badge">Не готово</span>' +
+      '</div>' +
+      '<p class="doc-card__desc">' + cat.desc + '</p>';
+
+    if(cat.hasDropdown){
+      html += '<div class="field-row">' +
+        '<span class="field-label">' + cat.dropdownLabel + '</span>' +
+        '<select class="select-fake" data-role="dropdown">' +
+          '<option value="">Please select</option>' +
+          cat.dropdownOptions.map(function(o){ return '<option value="' + escapeHtml(o) + '">' + escapeHtml(o) + '</option>'; }).join("") +
+        '</select>' +
+      '</div>';
+    }
+
+    if(cat.hasTextarea){
+      html += '<div class="field-row">' +
+        '<span class="field-label">Explanation <span class="counter" data-role="counter">0/' + cat.textareaMax + '</span></span>' +
+        '<textarea data-role="textarea" maxlength="' + cat.textareaMax + '" placeholder="' + escapeHtml(cat.textareaPlaceholder) + '"></textarea>' +
+        (cat.chronologyInsert ? '<button type="button" class="insert-btn" data-role="insert">Вставить из хронологии</button>' : '') +
+      '</div>';
+    }
+
+    html += '<div class="dropzone" tabindex="0" role="button" aria-label="Добавить файлы: ' + cat.title + '" data-role="dropzone">' +
+        '<input type="file" multiple style="display:none" data-role="input">' +
+        '<p>Перетащите файлы сюда или <span class="link">выберите на устройстве</span><span class="fmt">JPG, PNG, PDF · до 10 МБ</span></p>' +
+      '</div>' +
+      '<p class="file-error" data-role="error" hidden></p>' +
+      '<ul class="file-list" data-role="filelist"></ul>' +
+      '<div class="doc-card__footer">' +
+        '<div class="status-toggle" role="group" aria-label="Статус: ' + cat.title + '" data-role="toggle">' +
+          '<button type="button" data-status="none">Не готово</button>' +
+          '<button type="button" data-status="draft">Черновик</button>' +
+          '<button type="button" data-status="ready">Готово</button>' +
+        '</div>' +
+      '</div>';
+
+    card.innerHTML = html;
+    docStack.appendChild(card);
+
+    var dropzone = card.querySelector('[data-role="dropzone"]');
+    var fileInput = card.querySelector('[data-role="input"]');
+    var errorEl = card.querySelector('[data-role="error"]');
+
+    dropzone.addEventListener("click", function(){ fileInput.click(); });
+    dropzone.addEventListener("keydown", function(e){
+      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); fileInput.click(); }
+    });
+    dropzone.addEventListener("dragover", function(e){ e.preventDefault(); dropzone.classList.add("is-dragover"); });
+    dropzone.addEventListener("dragleave", function(){ dropzone.classList.remove("is-dragover"); });
+    dropzone.addEventListener("drop", function(e){
+      e.preventDefault();
+      dropzone.classList.remove("is-dragover");
+      handleFiles(cat.key, e.dataTransfer.files, errorEl);
+    });
+    fileInput.addEventListener("change", function(){
+      handleFiles(cat.key, fileInput.files, errorEl);
+      fileInput.value = "";
+    });
+
+    if(cat.hasDropdown){
+      var dropdown = card.querySelector('[data-role="dropdown"]');
+      dropdown.addEventListener("change", function(){
+        state.categories[cat.key].dropdown = dropdown.value;
+        saveState();
+      });
+    }
+
+    if(cat.hasTextarea){
+      var textarea = card.querySelector('[data-role="textarea"]');
+      var counter = card.querySelector('[data-role="counter"]');
+      textarea.addEventListener("input", function(){
+        state.categories[cat.key].text = textarea.value;
+        counter.textContent = textarea.value.length + "/" + cat.textareaMax;
+        saveState();
+      });
+      var insertBtn = card.querySelector('[data-role="insert"]');
+      if(insertBtn){
+        insertBtn.addEventListener("click", function(){
+          var pieces = cat.chronologyInsert.map(function(k){ return state.narrative[k] || ""; }).filter(Boolean);
+          var joined = pieces.join(" ").slice(0, cat.textareaMax);
+          textarea.value = joined;
+          state.categories[cat.key].text = joined;
+          counter.textContent = joined.length + "/" + cat.textareaMax;
+          saveState();
+        });
+      }
+    }
+
+    var toggle = card.querySelector('[data-role="toggle"]');
+    toggle.addEventListener("click", function(e){
+      var btn = e.target.closest("button");
+      if(!btn) return;
+      state.categories[cat.key].status = btn.getAttribute("data-status");
+      saveState();
+      renderCategory(cat.key);
+      renderOverview();
+    });
+  });
+
+  function handleFiles(key, fileList, errorEl){
+    errorEl.hidden = true;
+    var errors = [];
+    Array.prototype.forEach.call(fileList, function(file){
+      var err = validateFile(file);
+      if(err){ errors.push(file.name + ": " + err); return; }
+      var id = genId();
+      putBlob(id, file).then(function(){
+        state.categories[key].files.push({ id: id, name: file.name, size: file.size, type: file.type });
+        saveState();
+        renderCategory(key);
+        renderOverview();
+      });
+    });
+    if(errors.length){ errorEl.textContent = errors.join(" · "); errorEl.hidden = false; }
+  }
+
+  function renderCategory(key){
+    var card = docStack.querySelector('[data-key="' + key + '"]');
+    var data = state.categories[key];
+    var catDef = CATEGORIES.find(function(c){ return c.key === key; });
+
+    var badge = card.querySelector('[data-role="badge"]');
+    badge.setAttribute("data-status", data.status);
+    badge.textContent = STATUS_LABEL[data.status];
+
+    card.querySelector('[data-role="toggle"]').querySelectorAll("button").forEach(function(btn){
+      btn.classList.toggle("is-active", btn.getAttribute("data-status") === data.status);
+    });
+
+    if(catDef.hasDropdown){
+      var dropdown = card.querySelector('[data-role="dropdown"]');
+      if(document.activeElement !== dropdown) dropdown.value = data.dropdown || "";
+    }
+    if(catDef.hasTextarea){
+      var textarea = card.querySelector('[data-role="textarea"]');
+      if(document.activeElement !== textarea) textarea.value = data.text || "";
+      card.querySelector('[data-role="counter"]').textContent = (data.text || "").length + "/" + catDef.textareaMax;
+    }
+
+    var list = card.querySelector('[data-role="filelist"]');
+    list.innerHTML = "";
+    data.files.forEach(function(f){
+      var li = document.createElement("li");
+      li.innerHTML =
+        '<span class="file-name">' + escapeHtml(f.name) + '</span>' +
+        '<span class="file-size tabnum">' + formatSize(f.size) + '</span>' +
+        '<span class="file-actions">' +
+          '<button type="button" class="icon-btn" data-role="dl">Скачать</button>' +
+          '<button type="button" class="icon-btn danger" data-role="rm" aria-label="Удалить ' + escapeHtml(f.name) + '">×</button>' +
+        '</span>';
+      li.querySelector('[data-role="dl"]').addEventListener("click", function(btnEvent){
+        var btn = btnEvent.currentTarget;
+        var original = btn.textContent;
+        btn.textContent = "…";
+        ensureDownloads().then(function(api){
+          if(!api){ btn.textContent = "Недоступно"; setTimeout(function(){ btn.textContent = original; }, 1500); return; }
+          getBlob(f.id).then(function(blob){
+            if(!blob){ btn.textContent = original; return; }
+            return api.save({ filename: f.name, data: blob });
+          }).then(function(){
+            btn.textContent = "Скачано";
+            setTimeout(function(){ btn.textContent = original; }, 1500);
+          }).catch(function(){
+            btn.textContent = original;
+          });
+        });
+      });
+      li.querySelector('[data-role="rm"]').addEventListener("click", function(){
+        deleteBlobFromDB(f.id);
+        data.files = data.files.filter(function(x){ return x.id !== f.id; });
+        saveState();
+        renderCategory(key);
+        renderOverview();
+      });
+      list.appendChild(li);
+    });
+  }
+
+  // ---- Overview ----
+  var progressTrack = document.getElementById("progressTrack");
+  var progressItems = VERIFY_STEPS.map(function(v){ return { kind: "verify", key: v.key }; })
+    .concat(CATEGORIES.map(function(c){ return { kind: "cat", key: c.key }; }));
+  progressItems.forEach(function(item){
+    var seg = document.createElement("div");
+    seg.className = "progress-seg";
+    seg.setAttribute("data-item", item.kind + ":" + item.key);
+    progressTrack.appendChild(seg);
+  });
+
+  function renderOverview(){
+    var readyCount = 0;
+    progressItems.forEach(function(item){
+      var seg = progressTrack.querySelector('[data-item="' + item.kind + ':' + item.key + '"]');
+      var status = "none";
+      if(item.kind === "verify"){
+        status = state.verify[item.key] ? "ready" : "none";
+      }else{
+        status = state.categories[item.key].status;
+      }
+      if(status === "ready") readyCount++;
+      seg.setAttribute("data-status", status);
+    });
+    document.getElementById("statProgress").textContent = readyCount + " / " + progressItems.length;
+
+    var n = state.narrative;
+    var narrativeFilled = (n.step1 || "").trim() && (n.step2 || "").trim() && (n.step3 || "").trim();
+    document.getElementById("statNarrative").textContent = narrativeFilled ? "заполнена" : "не заполнена";
+
+    var nextEl = document.getElementById("statNext");
+    var firstVerify = VERIFY_STEPS.find(function(v){ return !state.verify[v.key]; });
+    if(firstVerify){
+      nextEl.textContent = "Пройдите: " + firstVerify.title;
+    }else if(!narrativeFilled){
+      nextEl.textContent = "Заполните хронологию происхождения средств";
+    }else{
+      var firstNotReady = CATEGORIES.find(function(cat){ return state.categories[cat.key].status !== "ready"; });
+      nextEl.textContent = firstNotReady ? "Подготовьте: " + firstNotReady.title : "Пакет готов — переносите в форму MEXC";
+    }
+  }
+
+  // ---- Narrative fields ----
+  ["step1", "step2", "step3"].forEach(function(id){
+    var el = document.getElementById(id);
+    el.value = state.narrative[id] || "";
+    el.addEventListener("input", function(){
+      state.narrative[id] = el.value;
+      saveState();
+      renderOverview();
+    });
+  });
+
+  // ---- Tabs ----
+  document.querySelectorAll(".app-tab").forEach(function(tab){
+    tab.addEventListener("click", function(){
+      document.querySelectorAll(".app-tab").forEach(function(t){
+        t.classList.toggle("is-active", t === tab);
+        t.setAttribute("aria-selected", t === tab ? "true" : "false");
+      });
+      var target = tab.getAttribute("data-tab");
+      document.getElementById("tabDocuments").hidden = target !== "documents";
+      document.getElementById("tabStatus").hidden = target !== "status";
+    });
+  });
+
+  // ---- Status tab ----
+  var statusKycEl = document.getElementById("statusKyc");
+  statusKycEl.value = state.status.kyc;
+  statusKycEl.addEventListener("change", function(){
+    state.status.kyc = statusKycEl.value;
+    touchStatus();
+  });
+
+  var statusNoteEl = document.getElementById("statusNote");
+  statusNoteEl.value = state.status.note || "";
+  statusNoteEl.addEventListener("input", function(){
+    state.status.note = statusNoteEl.value;
+    touchStatus();
+  });
+
+  document.querySelectorAll('[data-role="statusToggle"]').forEach(function(group){
+    var key = group.getAttribute("data-key");
+    group.addEventListener("click", function(e){
+      var btn = e.target.closest("button");
+      if(!btn) return;
+      state.status[key] = btn.getAttribute("data-val");
+      renderStatusToggle(group, key);
+      touchStatus();
+    });
+    renderStatusToggle(group, key);
+  });
+
+  function renderStatusToggle(group, key){
+    group.querySelectorAll("button").forEach(function(btn){
+      btn.classList.toggle("is-active", btn.getAttribute("data-val") === state.status[key]);
+    });
+  }
+
+  function touchStatus(){
+    state.status.updatedAt = new Date().toISOString();
+    saveState();
+    renderStatusUpdatedLine();
+  }
+
+  function renderStatusUpdatedLine(){
+    var el = document.getElementById("statusUpdatedLine");
+    if(!state.status.updatedAt){ el.textContent = "Ещё не обновлялось."; return; }
+    var d = new Date(state.status.updatedAt);
+    el.textContent = "Обновлено вручную: " + d.toLocaleDateString("ru-RU") + " " + d.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+  }
+  renderStatusUpdatedLine();
+
+  VERIFY_STEPS.forEach(function(v){ renderVerify(v.key); });
+  CATEGORIES.forEach(function(cat){ renderCategory(cat.key); });
+  renderOverview();
+})();
+</script>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+  (function(){
+    if(window.Telegram && window.Telegram.WebApp){
+      var tg = window.Telegram.WebApp;
+      tg.ready();
+      tg.expand();
+    }
+  })();
+</script>
+</body>
+</html>
